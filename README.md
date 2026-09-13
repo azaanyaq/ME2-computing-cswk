@@ -22,9 +22,9 @@ The notebook:
 
 The electric field $E$ follows the **2D wave equation**:
 
-$$
+```math
 \frac{\partial^2 E}{\partial t^2} = c^2 \left( \frac{\partial^2 E}{\partial x^2} + \frac{\partial^2 E}{\partial y^2} \right)
-$$
+```
 
 In simple terms, how quickly the field speeds up or slows down at a point depends on how curved the wave is around that point. $c$ is the wave speed. Where $c$ changes, the wave bends.
 
@@ -32,9 +32,9 @@ In simple terms, how quickly the field speeds up or slows down at a point depend
 
 The left edge of the domain moves up and down like a sine wave:
 
-$$
+```math
 E = \sin(2 \pi f t), \qquad f = 4 \text{ Hz}
-$$
+```
 
 This sends waves travelling to the right with a wavelength of $\lambda = c / f = 0.25$ m.
 
@@ -46,9 +46,9 @@ The object is a circle of radius 0.3 m at $(1.5, 0)$. The field inside it is for
 
 The cloak is a ring around the object, from $R_1 = 0.3$ m to $R_2 = 0.6$ m. Inside the ring the wave speed changes with distance $r$ from the centre:
 
-$$
-c(r) = c_0 \, \frac{R_2}{R_2 - R_1} \left( \frac{r - R_1}{r} \right)^2
-$$
+```math
+c(r) = c_0 \frac{R_2}{R_2 - R_1} \left( \frac{r - R_1}{r} \right)^2
+```
 
 - Next to the object ($r = R_1$) the wave is almost stopped.
 - At the outside of the ring ($r = R_2$) the wave travels at half its normal speed.
@@ -60,37 +60,35 @@ This idea comes from **transformation optics** (Pendry et al., 2006). A perfect 
 
 The setup looks the same above and below the line $y = 0$. So only the top half is calculated, which halves the work, and the result is mirrored for the plots. On the symmetry line the wave has zero slope:
 
-$$
+```math
 \frac{\partial E}{\partial y} = 0 \quad \text{at } y = 0
-$$
+```
 
 ## The Numerical Method
 
 ### Setting up the grid
 
-The domain (4 m by 1.5 m) is split into a grid of $400 \times 150$ points, about 1 cm apart. Time moves forward in small steps of about 0.0057 s, for 1500 steps (8.5 s in total).
+The domain (4 m by 1.5 m) is split into a grid of 400 by 150 points, about 1 cm apart. Time moves forward in small steps of about 0.0057 s, for 1500 steps (8.5 s in total).
 
 ### Finite differences
 
 A computer can't handle derivatives directly, so each one is replaced by a **central difference**, which uses neighbouring points. For example:
 
-$$
+```math
 \frac{\partial^2 E}{\partial x^2} \approx \frac{E_{i+1} - 2E_i + E_{i-1}}{\Delta x^2}
-$$
+```
 
 Doing this for every derivative in the wave equation and rearranging gives a formula for the field at the **next** time step:
 
-$$
-E^{n+1}_{i,j} = 2E^n_{i,j} - E^{n-1}_{i,j}
-+ C_x^2 \left( E^n_{i+1,j} - 2E^n_{i,j} + E^n_{i-1,j} \right)
-+ C_y^2 \left( E^n_{i,j+1} - 2E^n_{i,j} + E^n_{i,j-1} \right)
-$$
+```math
+E^{n+1}_{i,j} = 2E^n_{i,j} - E^{n-1}_{i,j} + C_x^2 \left( E^n_{i+1,j} - 2E^n_{i,j} + E^n_{i-1,j} \right) + C_y^2 \left( E^n_{i,j+1} - 2E^n_{i,j} + E^n_{i,j-1} \right)
+```
 
 where
 
-$$
-C_x = \frac{c \, \Delta t}{\Delta x}, \qquad C_y = \frac{c \, \Delta t}{\Delta y}
-$$
+```math
+C_x = \frac{c \Delta t}{\Delta x}, \qquad C_y = \frac{c \Delta t}{\Delta y}
+```
 
 In words, the new value at a point depends on its value at the last two time steps and on the values at its four neighbours. The code applies this formula to every point at once using NumPy array slicing, which is much faster than loops.
 
@@ -98,17 +96,17 @@ In words, the new value at a point depends on its value at the last two time ste
 
 The formula needs **two** earlier time steps, but at the start there is only one. The wave starts at rest ($\partial E / \partial t = 0$), which gives a special first step:
 
-$$
-E^1 = E^0 + \tfrac{1}{2} C_x^2 \left( E^0_{i+1} - 2E^0_i + E^0_{i-1} \right) + \tfrac{1}{2} C_y^2 \left( E^0_{j+1} - 2E^0_j + E^0_{j-1} \right)
-$$
+```math
+E^1_{i,j} = E^0_{i,j} + \frac{1}{2} C_x^2 \left( E^0_{i+1,j} - 2E^0_{i,j} + E^0_{i-1,j} \right) + \frac{1}{2} C_y^2 \left( E^0_{i,j+1} - 2E^0_{i,j} + E^0_{i,j-1} \right)
+```
 
 ### Keeping it stable
 
 If the time step is too big, the simulation blows up. It stays stable as long as
 
-$$
-c_{\max} \, \Delta t \sqrt{\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}} \le 1
-$$
+```math
+c_{\max} \Delta t \sqrt{\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}} \le 1
+```
 
 The code works out the largest time step allowed and then uses 80% of it to be safe.
 
@@ -135,18 +133,18 @@ Only the second half of the recording is used (from about 4.3 s onward), after t
 
 The DFT is written by hand, as in Exercises 8:
 
-$$
-c_k = \sum_{n=0}^{N-1} y_n \, e^{-2 \pi i k n / N}
-$$
+```math
+c_k = \sum_{n=0}^{N-1} y_n e^{-2 \pi i k n / N}
+```
 
 - $y_n$ are the $N$ recorded values.
 - $c_k$ measures how much of frequency number $k$ is in the signal.
 
 Each $k$ is turned into a real frequency in Hz using
 
-$$
+```math
 f_k = \frac{k}{N \Delta t}
-$$
+```
 
 and the size of each frequency is plotted as $|c_k| / N$.
 
