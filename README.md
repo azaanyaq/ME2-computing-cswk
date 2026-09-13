@@ -1,5 +1,10 @@
 # Simulating an Invisibility Cloak for Waves
 
+<img width="1245" height="793" alt="Screenshot 2026-09-13 at 6 09 53 pm" src="https://github.com/user-attachments/assets/a08c11ab-c63c-4cd7-a668-93c3afe583f4" />
+
+
+*The electric field at the end of the simulation (t = 8.52 s). Red and blue show positive and negative field. The grey hatched disc is the object, the yellow ring is the cloak and the cyan dot is the sensor.*
+
 ME2 Computing Coursework
 
 Notebook: `ME2_CW_Code_Final.ipynb`
